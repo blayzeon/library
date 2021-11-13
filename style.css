@@ -1,0 +1,182 @@
+*{
+  box-sizing: border-box !important;
+}
+
+html, body{
+  margin: 0px;
+  padding: 0px;
+  font-family: courier;
+  background: #eeee;
+  font-size: 1rem;
+  min-width: 300px;
+  cursor: default;
+  user-select: none;
+}
+
+section{
+  background: white;
+  padding: 3rem;
+  border-radius: 1rem;
+  margin: 2rem 5rem;
+  max-width: 80%;
+}
+
+h1{
+  margin-left: 1rem;
+}
+
+h1, h2{
+  font-family: georgia;
+}
+
+h2{
+  font-size: 2rem;
+  text-align: center;
+  background: rgba(0,89,110,0.2);
+}
+
+ul{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 1rem;
+  margin: 0px;
+  gap: 1rem;
+  border: 0.1rem solid black;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+button, select{
+  padding: 0.5rem 3rem;
+  font-family: monospace;
+  margin-bottom: 1rem;
+  border: 0.1rem solid gray;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover, select:hover{
+  background: rgba(210,110,0,0.2);
+}
+
+input[type=text]{
+  padding: 0.3rem;
+  border-radius: 0.2rem;
+  border: 1px solid gray;
+}
+input[type=text]:focus{
+  outline: 1px solid orangered;
+}
+
+.center{
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.space-between{
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid black;
+}
+
+#book-dump{
+  background: linear-gradient(rgba(55,55,255,.2), rgba(255,155,255,.4)), url("https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2093&q=80");
+  padding: 2rem 0;
+}
+
+#book-dump > *{
+  width: 25%;
+}
+
+.book-card{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  background: white;
+  padding-bottom: 1.5rem;
+  height: 100%;
+}
+
+.book-card h3{
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 0.5rem;
+}
+
+.book-card li{
+  color: black;
+  font-weight: bold;
+  font-family: monospace;
+  min-width: 100%;
+  max-width: 100%;
+  max-height: 5.5rem;
+  white-space: no-wrap;
+  overflow: hidden;
+}
+
+.book-card span{
+  color: steelblue;
+  font-family: courier;
+}
+
+.book-card i:hover{
+  cursor: pointer;
+  color: orangered;
+}
+
+.small-font{
+  font-size: 1rem !important;
+}
+
+.white-text{
+  text-align: center;
+  width: 100% !important;
+  font-family: monospace;
+  color: white;
+  font-size: 2rem;
+}
+
+@media(max-width: 80rem){
+    section{
+      margin: 0;
+      max-width: 100%;
+      padding: 1rem;
+  }
+}
+
+@media(max-width: 50rem){
+  #book-dump > *{
+    width: 100%;
+  }
+  body, html{
+    background: white;
+  }
+  h1{
+    font-size: 2rem;
+    margin: 0;
+    text-align: center;
+  }
+  h2{
+    font-size: 1.5rem;
+  }
+  ul{
+    flex-direction: column;
+  }
+  .center{
+    flex-direction: column;
+  }
+  button{
+    margin-bottom: 0;
+  }
+  form{
+    flex-direction: column;
+    text-align: center;
+  }
+}
