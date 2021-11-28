@@ -21,14 +21,14 @@
 let myLibrary = [];
 
 // book prototype
-const book = {
-    init: function(title, author, pages, stat){
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.stat = stat;
-        return this;
-    },
+const book = class {
+    constructor(title, author, pages, stat){
+        this.title = title
+        this.author = author
+        this.pages = pages
+        this.stat = stat
+        return this
+    }
 }
 
 // storage management
@@ -89,7 +89,7 @@ function addBookToLibrary(valueArray=[]){
     if (valueArray[3] == "true"){
         stat = true;
     } 
-    newBook = Object.create(book).init(valueArray[0], valueArray[1], valueArray[2], stat);
+    newBook = new book(valueArray[0], valueArray[1], valueArray[2], stat);
     myLibrary.push(newBook); // add to the library
 
     // display the book
