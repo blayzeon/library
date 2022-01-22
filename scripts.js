@@ -21,205 +21,157 @@
 let myLibrary = [];
 
 // book prototype
-const book = class {
-    constructor(title, author, pages, stat){
-        this.title = title
-        this.author = author
-        this.pages = pages
-        this.stat = stat
-        return this
-    }
-}
-
-// storage management
-function updateStorage(type, index, array="n/a"){
-    /* 
-        Cycle through the myLibrary Array
-        Grab each value and add them to an array
-        Add it to local storage (it is automatically turned into a string separated by commas)
-
-    */
-
-    // add the array to storage
-    if (type == "add"){
-        localStorage.setItem(`book${index}`, array);
-    } else {
-        localStorage.clear();
-        for (i = 0; i < myLibrary.length; i++){
-            let tempArray = [myLibrary[i].title, myLibrary[i].author, myLibrary[i].pages, myLibrary[i].stat];
-            localStorage.setItem(`book${i}`, tempArray);
+const book = function createNewBook(title, author, pages, stat, array=myLibrary) {
+    return {
+        title,
+        author,
+        pages,
+        stat,
+        remove(parent, child){
+            const a = confirm('Would you like to remove this book?');
+            if (a === true){
+                array.splice(array.indexOf(this), 1);
+                parent.removeChild(child);
+            }
+            toggle();
+        },
+        toggle(){
+            if (this.stat === "true"){
+                this.stat = "false"
+            } else {
+                this.stat = "true";
+            }
         }
     }
 }
 
 // add books to library
-function addBookToLibrary(valueArray=[]){
-    // checks to make sure no values are empty
-    function checkForm(idArray){
-        for (i = 0; i < idArray.length; i++){
-            if (document.getElementById(idArray[i]).value == ''){
-                // provide an error if more info is needed
-                throw "Please enter all of the required fields."
-            }
-        }
-    }
-
-    try{
-        checkForm(['book-title', 'book-author', 'book-pages', 'book-stat']);
-    } catch (err){
-        if (valueArray == []){
-            alert(err);
-            return;
-        }
-    }
-
-    // no errors, add the book to the end of the array myLibrary
-    if (valueArray.length == 0){
-        valueArray = [
-            document.getElementById('book-title').value,
-            document.getElementById('book-author').value,
-            document.getElementById('book-pages').value,
-            document.getElementById('book-stat').value,
-        ];
-
-        // update storage
-        storage = true;
-    }
-    let stat = false;
-    if (valueArray[3] == "true"){
-        stat = true;
-    } 
-    newBook = new book(valueArray[0], valueArray[1], valueArray[2], stat);
+const add = function addBookToLibrary(valueArray=[document.getElementById('book-title').value, document.getElementById('book-author').value, document.getElementById('book-pages').value, document.getElementById('book-stat').value]){
+    newBook = book(valueArray[0], valueArray[1], valueArray[2], valueArray[3]);
     myLibrary.push(newBook); // add to the library
-
-    // display the book
-    updateStorage("add", myLibrary.length-1, valueArray);
-    displayBooks();
+    return newBook;
 }    
 
-// makes books appear on page
-function displayBooks(){
-    const dump = document.getElementById('book-dump');
-
-    if (myLibrary.length > 0){
-        // removes the old babies
-        document.querySelectorAll('.generated-book').forEach((baby) =>{
-            dump.removeChild(baby);
-        });
-
-        /* 
-            Creates an element for each item in the myLibrary array
-            and dumps it in the dump element (#book-dump)
-        */
-
-        function generateMsg(index){
-            let temp = "Not read yet";
-            if (myLibrary[index].stat == true){
-                temp = "Read";
-            }
-            return temp;
+// creates the DOM element for the book
+const display = function displayBook(newBook){
+    function updateStatusMsg(){
+        if (newBook.stat === 'false'){
+            return 'Not read';
+        } else {
+            return 'Read'
         }
-
-        for (i = 0; i < myLibrary.length; i++){
-            const book = document.createElement('li');
-            book.setAttribute('id', `book-${i}`);
-            book.classList.add('generated-book');
-
-            book.innerHTML = `
-                <ul class="book-card">
-                    <li class="space-between">
-                        <i class="material-icons btn-book-toggle" data-index="${i}">visibility</i>
-                        <i class="material-icons btn-book-remove" data-index="${i}">close</i>
-                    </li>
-                    <li class="center"><h3 id="book-title${i}">${myLibrary[i].title}</h3></li>
-                    <li>Author: <span>${myLibrary[i].author}<span></li>
-                    <li>Pages: <span>${myLibrary[i].pages}<span></li>
-                    <li>Status: <span id="book-card-status${i}">${generateMsg(i)}<span></li>
-                </ul>
-            `;
-            dump.appendChild(book);
-
-            const titleFont = document.getElementById(`book-title${i}`);
-            if (myLibrary[i].title.length > 20){
-                titleFont.classList.add('small-font');
-            } else {
-                titleFont.classList.add('large-font');
-            }
-        }
-
-        // add the event listeners
-        dump.querySelectorAll('.btn-book-toggle').forEach((btn) =>{
-            // when the user clicks the eyeball icon, it toggles whether or not the book was read
-            const index = btn.dataset.index;
-            btn.addEventListener('click', ()=>{
-                if (myLibrary[index].stat == true){
-                    myLibrary[index].stat = false;
-                } else {
-                    myLibrary[index].stat = true;
-                }
-                document.getElementById(`book-card-status${index}`).innerHTML = `${generateMsg(index)}`;
-            });
-        });
-
-        dump.querySelectorAll('.btn-book-remove').forEach((btn) =>{
-            // when the user clicks the x icon, it removes the book
-            btn.addEventListener('click', ()=>{
-                const index = btn.dataset.index;
-                const cardParent = document.getElementById(`book-${index}`);
-                
-                if (myLibrary.length == 1){
-                    myLibrary = [];
-                    dump.removeChild(cardParent);
-                } else {
-                    myLibrary.splice(index, 1);
-                }
-                // display the changes
-                updateStorage('remove', index);
-                displayBooks();
-            });
-        });
-    } else {
-        dump.innerHTML = `<li class="generated-book white-text"><h3>There are no books to display; try adding some!</h3></li>`;
     }
+
+    function updateStorage(){
+        localStorage.setItem('books', JSON.stringify(myLibrary));
+    }
+
+    const statusMsg = updateStatusMsg();
+
+    // create the elements
+    const library = document.getElementById('book-dump');
+    const book = document.createElement('ul');
+    const btnContainer = document.createElement('li')
+    const removeBtn = document.createElement('h3');
+    const authorContainer = document.createElement('li');
+    const pagesContainer = document.createElement('li');
+    const statusContainer = document.createElement('li');
+    const author = document.createElement('span');
+    const pages = document.createElement('span');
+    const status = document.createElement('span');
+    
+    // adding classes
+    btnContainer.classList.add('space-between');
+    book.classList.add('book-card');
+    statusContainer.classList.add('book-pointer');
+    removeBtn.classList.add('book-pointer');
+
+    // adding flavor
+    removeBtn.innerText = newBook.title;
+    authorContainer.innerText = 'Author: ';
+    pagesContainer.innerText = 'Pages: ';
+    statusContainer.innerText = 'Status: ';
+    author.innerText = newBook.author;
+    pages.innerText = newBook.pages;
+    status.innerText = statusMsg;
+
+    // append the flavor to the <li>
+    btnContainer.appendChild(removeBtn);
+    authorContainer.appendChild(author);
+    pagesContainer.appendChild(pages);
+    statusContainer.appendChild(status);
+    // append the <li> to the <ul>
+    book.appendChild(btnContainer);
+    book.appendChild(authorContainer);
+    book.appendChild(pagesContainer);
+    book.appendChild(statusContainer);
+    // append together
+    library.appendChild(book);
+
+    // add event listeners
+    removeBtn.addEventListener('click', ()=>{
+        newBook.remove(library, book);
+        updateStorage();
+    });
+
+    statusContainer.addEventListener('click', ()=>{
+        newBook.toggle();
+        status.innerText = updateStatusMsg();
+        updateStorage();
+    });
+}
+
+// toggle the no books message
+const toggle = function toggleDisplayMessage(){
+    const elm = document.getElementById('default-msg');
+    if (myLibrary.length === 0){
+        elm.classList.remove('hide-me');
+    } else {
+        elm.classList.add('hide-me');
+    }
+}
+
+// add existing books from local storage (if available)
+const storage = JSON.parse(localStorage.getItem('books'));
+if (storage !== null && storage.length > 0){
+    for (let i = 0; i < storage.length; i += 1){
+        const adding = add([storage[i].title, storage[i].author, storage[i].pages, storage[i].stat]);
+        display(adding);
+    }
+} else {
+    document.getElementById('default-msg').classList.remove('hide-me');
 }
 
 // event listener to add books
 document.getElementById('book-add').addEventListener('click', ()=>{
-    addBookToLibrary()
-});
-document.getElementById('book-clear').addEventListener('click',()=>{
-    let r = confirm('Are you sure you wish to clear the form?');
-    if (r == true){
+    const elm1 = document.getElementById('book-title');
+    const elm2 = document.getElementById('book-author');
+    const elm3 = document.getElementById('book-pages');
+    
+    let valid = true;
+    if (!elm1.checkValidity() || !elm2.checkValidity() || !elm3.checkValidity()){
+        valid = false;
+    } 
+
+    if (valid === true){
+        const newBook = add();
+        display(newBook);
+        localStorage.setItem('books', JSON.stringify(myLibrary));
         document.getElementById('book-title').value = "";
         document.getElementById('book-author').value = "";
         document.getElementById('book-pages').value = "";
+        toggle();
     }
 });
 
-// add books for testing
-function createBooks(number){
-    for (i = 0; i < number+1; i++){
-        tempArray = [`cat${i}`, 'mr. cat', '100', false];
-        addBookToLibrary(tempArray);
+document.getElementById('book-clear').addEventListener('click',()=>{
+    const r = confirm('Would you like to clear all books?');
+    if (r === true){
+        localStorage.clear();
+        document.getElementById('book-dump').innerHTML = '<li id="default-msg" class="hide-me white-text">There are no books to display</li>';
+        myLibrary = [];
+        toggle();
     }
-}
+});
 
-if (localStorage.length > 0){
-    /*
-        We need to loop through local storage and once we have an array, clear it, so we can re-add it 
-        We do this to ensure the indexing stays correct in the event a user deletes items out of order 
-    */
-    let bookArray = [];
-    const index = localStorage.length;
-    for (i = 0; i < index; i++){
-        const index = localStorage.key(i);
-        const tempBook = localStorage.getItem(index).split(',');
-        bookArray.push(tempBook);
-    }
-
-    localStorage.clear();
-    for (j = 0; j < index; j++){
-        addBookToLibrary(bookArray[j]);        
-    }
-}
-displayBooks();
+toggle();
