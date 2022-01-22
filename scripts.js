@@ -20,6 +20,25 @@
 // stores books
 let myLibrary = [];
 
+// add existing books from local storage (if available)
+const storage = JSON.parse(localStorage.getItem('books'));
+if (storage !== null && storage.length > 0){
+    for (let i = 0; i < storage.length; i += 1){
+        const adding = add([storage[i].title, storage[i].author, storage[i].pages, storage[i].stat]);
+        display(adding);
+    }
+}
+
+// toggle the no books message
+const toggle = function toggleDisplayMessage(){
+    const elm = document.getElementById('default-msg');
+    if (myLibrary.length > 0){
+        elm.classList.add('hide-me');
+    } else {
+        elm.classList.remove('hide-me');
+    }
+}
+
 // book prototype
 const book = function createNewBook(title, author, pages, stat, array=myLibrary) {
     return {
@@ -119,27 +138,6 @@ const display = function displayBook(newBook){
         status.innerText = updateStatusMsg();
         updateStorage();
     });
-}
-
-// toggle the no books message
-const toggle = function toggleDisplayMessage(){
-    const elm = document.getElementById('default-msg');
-    if (myLibrary.length === 0){
-        elm.classList.remove('hide-me');
-    } else {
-        elm.classList.add('hide-me');
-    }
-}
-
-// add existing books from local storage (if available)
-const storage = JSON.parse(localStorage.getItem('books'));
-if (storage !== null && storage.length > 0){
-    for (let i = 0; i < storage.length; i += 1){
-        const adding = add([storage[i].title, storage[i].author, storage[i].pages, storage[i].stat]);
-        display(adding);
-    }
-} else {
-    document.getElementById('default-msg').classList.remove('hide-me');
 }
 
 // event listener to add books
